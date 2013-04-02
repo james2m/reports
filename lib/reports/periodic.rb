@@ -9,6 +9,8 @@ module Reports
 
   module Periodic
 
+    class InvalidPeriodError < ArgumentError; end
+
     attr_reader :period
     attr_accessor :month, :from, :to
 
