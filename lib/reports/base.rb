@@ -1,7 +1,6 @@
 module Reports
   class Base
 
-    class InvalidPeriodError < ArgumentError; end
     class NotImplementedError < ::NotImplementedError; end
 
     include ActiveModel::Validations
@@ -29,7 +28,12 @@ module Reports
     def persisted?; false; end
 
     def stream
-      raise NotImplementedError
+      @stream ||= begin
+        CSV.generate(:row_sep => "\r\n") do |csv|
+          csv << headers
+          rows.each { |row| csv << to_columns(row) }
+        end
+      end
     end
 
     def title
@@ -55,6 +59,14 @@ module Reports
       @rows ||= @scopes.inject(base_relation) do |relation, scope|
         relation.send(*scope)
       end
+    end
+
+    def headers
+      raise NotImplementedError
+    end
+
+    def to_columns(row)
+      raise NotImplementedError
     end
 
   end
