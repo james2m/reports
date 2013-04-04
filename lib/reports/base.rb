@@ -37,7 +37,7 @@ module Reports
     end
 
     def title
-      @title ||= I18n.t 'title', :scope => ['reports', type], :default => "#{type} report".titleize
+      @title ||= I18n.t 'title', { :scope => ['reports', type], :default => "#{type} report".titleize }.merge(locale_params)
     end
 
     def type
@@ -47,6 +47,10 @@ module Reports
     def valid?; true; end
 
     private
+
+    def locale_params
+      @locale_params ||= {}
+    end
 
     def add_report_specific_scopes
     end
