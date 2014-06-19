@@ -52,9 +52,6 @@ module Reports
       @locale_params ||= {}
     end
 
-    def add_report_specific_scopes
-    end
-
     def base_relation
       @base_relation ||= type.classify.constantize
     end
