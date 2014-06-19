@@ -1,27 +1,33 @@
 module Reports
 
-  def periods
-    @periods ||= ['for_month', 'between_months', 'year_to_date', 'all'].map do |period|
-      title = I18n.t('title', { scope: ['reports', 'periods', period], default: period.titleize })
-      OpenStruct.new(type: period, title: title)
-    end
-  end
-
-  module Periodic
+  class Periodic < Scoped
 
     class InvalidPeriodError < ArgumentError; end
+
+    class Period < Struct.new(:type, :title); end
 
     attr_reader :period
     attr_accessor :month, :from, :to
 
+    class << self
+
+      def periods
+        @periods ||= ['for_month', 'between_months', 'year_to_date', 'all'].map do |period|
+          title = I18n.t('title', { scope: ['reports', 'periods', period], default: period.titleize })
+          Period.new(period, title)
+        end
+      end
+
+    end
+
     def initialize(options = {})
       super
-      @period      = String(options['period'] || 'all')
+      @period = String(options['period'] || 'all')
       extract_date_options(options)
 
       @scopes << period_scope
 
-      add_period_scopes_base_relation
+      add_period_scopes_to_base_relation
     end
 
     def period_name
@@ -45,7 +51,7 @@ module Reports
 
     private
 
-    def add_period_scopes_base_relation
+    def add_period_scopes_to_base_relation
       scopes = Scopes.dup
       scopes.instance_methods.each do |method_name|
         scopes.send(:remove_method, method_name) if base_relation.respond_to?(method_name)
@@ -82,26 +88,6 @@ module Reports
 
     def period_scope_parameters
       period == 'for_month' ? [month] : [from, to]
-    end
-
-    # TODO extract into it's own file
-    module Scopes
-
-      def for_month(date)
-        where(["DATE_FORMAT(#{quoted_table_name}.#{connection.quote_column_name 'created_at'}, '%Y%m') = DATE_FORMAT(?, '%Y%m')", date])
-      end
-
-      def between_months(date1, date2)
-        query = [
-          "(DATE_FORMAT(#{quoted_table_name}.#{connection.quote_column_name 'created_at'}, '%Y%m') >= DATE_FORMAT(?, '%Y%m'))",
-          "(DATE_FORMAT(#{quoted_table_name}.#{connection.quote_column_name 'created_at'}, '%Y%m') <= DATE_FORMAT(?, '%Y%m'))"
-        ].join(' AND ')
-        where([date1, date2].sort.unshift(query))
-      end
-
-      def year_to_date
-        between_months DateTime.new(Time.now.year), Time.now
-      end
     end
 
   end
