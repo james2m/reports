@@ -44,6 +44,7 @@ module Reports
     end
 
     def valid?; true; end
+    def self.find(*args); nil; end
 
     private
 
