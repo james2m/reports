@@ -10,7 +10,6 @@ module Reports
     def initialize(options = {})
       @options = options
       options.stringify_keys!
-      @scopes = Array(options[:scopes])
     end
 
     def file
@@ -52,14 +51,8 @@ module Reports
       @locale_params ||= {}
     end
 
-    def base_relation
-      @base_relation ||= type.classify.constantize
-    end
-
     def rows
-      @rows ||= @scopes.inject(base_relation) do |relation, scope|
-        relation.send(*scope)
-      end
+      raise NotImplementedError
     end
 
     def headers
