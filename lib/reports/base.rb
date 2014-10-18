@@ -23,9 +23,6 @@ module Reports
       "#{title.parameterize}.csv"
     end
 
-    def new_record?; true; end
-    def persisted?; false; end
-
     def stream
       @stream ||= begin
         CSV.generate(:row_sep => "\r\n") do |csv|
@@ -43,7 +40,10 @@ module Reports
       self.class.name.demodulize.underscore.gsub(/_report$/, '')
     end
 
-    def valid?; true; end
+    def new_row(row)
+      Row.new(row)
+    end
+
     def self.find(*args); nil; end
 
     private
@@ -61,8 +61,11 @@ module Reports
     end
 
     def to_columns(row)
-      raise NotImplementedError
+      row.to_columns
     end
+
+    def new_record?; true; end
+    def persisted?; false; end
 
   end
   # Base
