@@ -9,7 +9,7 @@ module Reports
     private
 
     def base_relation
-      @base_relation ||= type.classify.constantize
+      @base_relation ||= base_class
     end
 
     def scoped_rows

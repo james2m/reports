@@ -33,10 +33,14 @@ module Reports
     end
 
     def title
-      @title ||= I18n.t 'title', { :scope => ['reports', type], :default => "#{type} report".titleize }.merge(locale_params)
+      @title ||= I18n.t 'title', { :scope => ['reports', type_name], :default => "#{type_name} report".titleize }.merge(locale_params)
     end
 
-    def type
+    def base_class
+      type_name.classify.constantize
+    end
+
+    def type_name
       self.class.name.demodulize.underscore.gsub(/_report$/, '')
     end
 
