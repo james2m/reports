@@ -25,9 +25,10 @@ module Reports
       @period = String(options['period'] || 'all')
       extract_date_options(options)
 
-      @scopes << period_scope
-
-      add_period_scopes_to_base_relation
+      if periodic_scopes_on_base_class
+        @scopes << period_scope
+        add_period_scopes_to_base_relation
+      end
     end
 
     def period_name
@@ -50,6 +51,10 @@ module Reports
     end
 
     private
+
+    def periodic_scopes_on_base_class
+      true
+    end
 
     def add_period_scopes_to_base_relation
       scopes = Scopes.dup
