@@ -27,7 +27,7 @@ module Reports
 
       if periodic_scopes_on_base_class
         @scopes << period_scope
-        add_period_scopes_to_base_relation
+        add_period_scopes_to_base_relation?
       end
     end
 
@@ -56,7 +56,7 @@ module Reports
       true
     end
 
-    def add_period_scopes_to_base_relation
+    def add_period_scopes_to_base_relation?
       scopes = Scopes.dup
       scopes.instance_methods.each do |method_name|
         scopes.send(:remove_method, method_name) if base_relation.respond_to?(method_name)
