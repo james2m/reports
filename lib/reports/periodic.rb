@@ -31,6 +31,11 @@ module Reports
       end
     end
 
+    def file_name
+      basename = [title, period].join('-')
+      "#{basename.parameterize}.csv"
+    end
+
     def period_name
       @period_name ||= begin
         options = [:month, :to, :from].inject({}) do |hash, option|
