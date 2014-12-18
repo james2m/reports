@@ -90,7 +90,8 @@ module Reports
 
     def period_scope
       case @period
-      when 'all','year_to_date' then [@period]
+      when 'all' then ['every']
+      when 'year_to_date' then [@period]
       when 'for_month', 'between_months' then [@period] + period_scope_parameters
       else raise InvalidPeriodError, 'must be either :for_month, :between_months, :year_to_date, or :all'
       end
